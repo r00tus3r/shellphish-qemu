@@ -1,0 +1,29 @@
+diff -rauN b/accel/tcg/cpu-exec.c shellphish-qemu-linux/accel/tcg/cpu-exec.c
+--- b/accel/tcg/cpu-exec.c	2022-04-15 00:10:57.142132227 +0000
++++ shellphish-qemu-linux/accel/tcg/cpu-exec.c	2022-04-15 00:13:39.951480517 +0000
+@@ -16,6 +16,9 @@
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
+  */
++#include <sys/types.h>
++#include <sys/syscall.h>
++#include <unistd.h>
+ 
+ #include "qemu/osdep.h"
+ #include "qemu-common.h"
+@@ -193,11 +195,13 @@
+         }
+     }
+ 
++    pid_t tid = syscall(__NR_gettid);
++
+     if(trace_started) {
+         qemu_log_mask_and_addr(CPU_LOG_EXEC, itb->pc,
+-                               "Trace %d: %p ["
++                               "Trace %d: TID %d: %p ["
+                                TARGET_FMT_lx "/" TARGET_FMT_lx "/%#x] %s\n",
+-                               cpu->cpu_index, itb->tc.ptr,
++                               cpu->cpu_index, tid, itb->tc.ptr,
+                                itb->cs_base, itb->pc, itb->flags,
+                                lookup_symbol(itb->pc));
+     }
